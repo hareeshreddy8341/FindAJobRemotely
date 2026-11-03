@@ -1,0 +1,69 @@
+server:
+  port: 8080
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+    include-exception: false
+  servlet:
+    session:
+      cookie:
+        http-only: true
+  # Stop Tomcat advertising itself
+  tomcat:
+    max-http-form-post-size: 1MB
+
+spring:
+  application:
+    name: findajobremotely
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/findajobremotely}
+      auto-index-creation: true
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+app:
+  jwt:
+    # REQUIRED: at least 32 characters. Generate with: openssl rand -base64 48
+    secret: ${JWT_SECRET:}
+    issuer: findajobremotely
+    access-ttl-minutes: 15
+    refresh-ttl-days: 7
+  cookie:
+    # Must be true in production (HTTPS). Only the dev profile turns it off.
+    secure: ${COOKIE_SECURE:true}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  security:
+    # REQUIRED: Base64 of 32 random bytes. Generate with: openssl rand -base64 32
+    data-encryption-key: ${DATA_ENCRYPTION_KEY:}
+    # Only enable when running behind a reverse proxy that overwrites X-Forwarded-For
+    trust-forwarded-headers: ${TRUST_FORWARDED_HEADERS:false}
+    auth-rate-per-minute: 20
+    api-rate-per-minute: 300
+    max-failed-logins: 5
+    lock-minutes: 15
+  admin:
+    # The first admin account is created at startup from these values (never via the public API)
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
+    name: Platform Admin
+  commission:
+    # Percentage of the candidate's first-month pay, charged only after a hire is recorded
+    percent: ${COMMISSION_PERCENT:10}

@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --ink: #0f1b2d; --paper: #f3f5fa; --line: #dfe4ee; --muted: #5b6676; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); }
+body { font-family: Figtree, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, .font-display { font-family: "Bricolage Grotesque", system-ui, sans-serif; letter-spacing: -0.01em; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid #2f4bff; outline-offset: 2px; border-radius: 4px; }
+.row-link:hover { background: #fff; }
+.tabular { font-variant-numeric: tabular-nums; }
+.skip-link { position: absolute; left: -999px; top: 8px; background: #0f1b2d; color: #fff; padding: 8px 12px; border-radius: 6px; z-index: 1000; }
+.skip-link:focus { left: 8px; }
+@keyframes tick { from { opacity: .35 } to { opacity: 1 } }
+.clock-colon { animation: tick 1s steps(2, start) infinite; }
+@media (prefers-reduced-motion: reduce) { .clock-colon { animation: none; } }

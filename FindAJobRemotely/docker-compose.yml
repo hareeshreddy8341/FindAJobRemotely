@@ -1,0 +1,39 @@
+# Run everything:  cp .env.example .env   (fill in the secrets)   then   docker compose up --build
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+    # No published ports: the database is reachable only from the backend container.
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on: [mongo]
+    environment:
+      MONGODB_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/findajobremotely?authSource=admin
+      JWT_SECRET: ${JWT_SECRET}
+      DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      CORS_ALLOWED_ORIGINS: ${PUBLIC_ORIGIN:-http://localhost}
+      COMMISSION_PERCENT: ${COMMISSION_PERCENT:-10}
+      TRUST_FORWARDED_HEADERS: "true"   # nginx overwrites X-Forwarded-For
+    # Not published: only nginx talks to it.
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    depends_on: [backend]
+    ports:
+      - "80:80"
+
+volumes:
+  mongo-data:
